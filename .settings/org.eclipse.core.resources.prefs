@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//src/com/dandian/admission/activity/WebSiteActivity.java=UTF-8
+encoding//src/com/dandian/admission/api/CampusAPI.java=UTF-8
+encoding//src/com/dandian/admission/api/HttpManager.java=UTF-8
+encoding//src/com/dandian/admission/db/DatabaseHelper.java=UTF-8
+encoding//src/com/dandian/admission/entity/Changekaoqininfo.java=UTF-8
+encoding//src/com/dandian/admission/entity/ImageItem.java=UTF-8
+encoding//src/com/dandian/admission/util/IntentUtility.java=UTF-8
+encoding//src/com/zhy/view/ClipImageLayout.java=UTF-8
+encoding//src/com/zxing/decoding/CaptureActivityHandler.java=UTF-8
