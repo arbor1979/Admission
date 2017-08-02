@@ -16,6 +16,7 @@ public class Constants {
 	public static final String PREF_SITE_URL = "pref.check_site_url";
 	public static final String PREF_LOGIN_NAME = "pref.check_login_name";
 	public static final String PREF_LOGIN_ID = "pref.check_login_id";
+	public static final String PREF_CHANGEPWD_TIP_DATE = "pref.check_changepwd_tip_date";
 	/**
 	 * 密码
 	 */

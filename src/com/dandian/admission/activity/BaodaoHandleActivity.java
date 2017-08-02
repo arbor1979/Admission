@@ -307,10 +307,8 @@ public class BaodaoHandleActivity extends Activity {
 			public void onClick(View v) {
 				ArrayList<String> userphones=new ArrayList<String>();
 				userphones.add("学生电话:"+userObject.optString("学生电话"));
-				userphones.add("父亲电话 :"+userObject.optString("父亲电话"));
-				userphones.add("母亲电话 :"+userObject.optString("母亲电话"));
-				if(userObject.optString("招生老师")!=null && userObject.optString("招生老师").length()>0 && ExpressionUtil.isMobileNO(userObject.optString("招生老师")))
-					userphones.add("备用电话 :"+userObject.optString("招生老师"));
+				userphones.add("监护人电话 :"+userObject.optString("监护人手机号码"));
+				
 				final String []  userStr=new String[userphones.size()];
 				for(int i=0;i<userphones.size();i++)
 				{
@@ -407,11 +405,13 @@ public class BaodaoHandleActivity extends Activity {
                 CheckBox checkBox3=(CheckBox)view.findViewById(R.id.checkBox3);
                 CheckBox checkBox4=(CheckBox)view.findViewById(R.id.checkBox4);
                 CheckBox checkBox5=(CheckBox)view.findViewById(R.id.checkBox5);
+                CheckBox checkBox6=(CheckBox)view.findViewById(R.id.checkBox6);
                 checkBox1.setEnabled(false);
                 checkBox2.setEnabled(false);
                 checkBox3.setEnabled(false);
                 checkBox4.setEnabled(false);
                 checkBox5.setEnabled(false);
+                checkBox6.setEnabled(false);
                 ImageView iv_complete=(ImageView)view.findViewById(R.id.iv_complete);
                 title.setText(key);
                 //detail.setText(userObject.optString(key));
@@ -425,7 +425,8 @@ public class BaodaoHandleActivity extends Activity {
                 	checkBox3.setVisibility(View.GONE);
                 	checkBox4.setVisibility(View.GONE);
                 	checkBox5.setVisibility(View.GONE);
-                	if(user.getsStatus().equals("报到操作员"))
+                	checkBox6.setVisibility(View.GONE);
+                	if(user.getsStatus().equals("班主任"))
                 	{
                 		checkBox1.setEnabled(true);
                 	}
@@ -441,7 +442,7 @@ public class BaodaoHandleActivity extends Activity {
 			                final boolean checked = ((CheckBox) v).isChecked();
 			                if(!checked)
 			                {
-			                	if(completeResult.optInt("领取校园卡")==1 || completeResult.optInt("分配宿舍")==1 || completeResult.optInt("领宿舍钥匙")==1)
+			                	if(completeResult.optInt("领取校园卡")==1 || completeResult.optInt("分配宿舍")==1 || completeResult.optInt("领宿舍钥匙")==1 || completeResult.optInt("缴费")==1)
 			                	{
 			                		AppUtility.showErrorToast(BaodaoHandleActivity.this,
 			            					"已有后续步骤已完成，本步骤无法取消");
@@ -480,13 +481,15 @@ public class BaodaoHandleActivity extends Activity {
                 	checkBox3.setVisibility(View.VISIBLE);
                 	checkBox4.setVisibility(View.VISIBLE);
                 	checkBox5.setVisibility(View.VISIBLE);
-                	if(user.getsStatus().equals("报到操作员"))
+                	checkBox6.setVisibility(View.VISIBLE);
+                	if(user.getsStatus().equals("班主任"))
                 	{
                 		checkBox1.setEnabled(true);
                 		checkBox2.setEnabled(true);
                 		checkBox3.setEnabled(true);
                 		checkBox4.setEnabled(true);
                 		checkBox5.setEnabled(true);
+                		checkBox6.setEnabled(true);
                 	}
                 	String[] ziliaoArray=userObject.optString(key).split("\n");
                 	for(int i=0;i<ziliaoArray.length;i++)
@@ -542,7 +545,8 @@ public class BaodaoHandleActivity extends Activity {
                 	checkBox3.setVisibility(View.GONE);
                 	checkBox4.setVisibility(View.GONE);
                 	checkBox5.setVisibility(View.GONE);
-                	if(user.getsStatus().equals("报到操作员"))
+                	checkBox6.setVisibility(View.GONE);
+                	if(user.getsStatus().equals("班主任"))
                 	{
                 		checkBox1.setEnabled(true);
                 	}
@@ -595,7 +599,8 @@ public class BaodaoHandleActivity extends Activity {
                 	checkBox3.setVisibility(View.GONE);
                 	checkBox4.setVisibility(View.GONE);
                 	checkBox5.setVisibility(View.GONE);
-                	if(user.getsStatus().equals("报到操作员"))
+                	checkBox6.setVisibility(View.GONE);
+                	if(user.getsStatus().equals("班主任"))
                 	{
                 		checkBox1.setEnabled(true);
                 	}
@@ -675,6 +680,7 @@ public class BaodaoHandleActivity extends Activity {
                 	checkBox3.setVisibility(View.GONE);
                 	checkBox4.setVisibility(View.GONE);
                 	checkBox5.setVisibility(View.GONE);
+                	checkBox6.setVisibility(View.GONE);
                 	if(user.getsStatus().equals("宿舍管理员"))
                 		checkBox1.setEnabled(true);
                 	checkBox1.setText(userObject.optString(key));
@@ -729,7 +735,7 @@ public class BaodaoHandleActivity extends Activity {
                 {
                 	detail.setVisibility(View.GONE);
                 	ll_checkbox.setVisibility(View.GONE);
-                	if(user.getsStatus().equals("报到操作员"))
+                	if(user.getsStatus().equals("班主任"))
                 	{
                 		rg_jiudufangshi.setVisibility(View.VISIBLE);
                 		
@@ -784,7 +790,7 @@ public class BaodaoHandleActivity extends Activity {
                 	}
                 	
                 }
-                else  if(key.equals("学费收缴"))
+                else  if(key.equals("缴费"))
                 {
                 	detail.setVisibility(View.GONE);
                 	ll_checkbox.setVisibility(View.VISIBLE);
@@ -793,12 +799,13 @@ public class BaodaoHandleActivity extends Activity {
                 	checkBox3.setVisibility(View.GONE);
                 	checkBox4.setVisibility(View.GONE);
                 	checkBox5.setVisibility(View.GONE);
-                	if(user.getsStatus().equals("财务人员") || user.getsStatus().equals("绿色通道审核员"))
+                	checkBox6.setVisibility(View.GONE);
+                	if(user.getsStatus().equals("班主任"))
                 	{
                 		checkBox1.setEnabled(true);
                 	}
                 	checkBox1.setText(userObject.optString(key));
-                	if(userObject.optString(key).equals("正常交费") || userObject.optString(key).equals("绿色通道"))
+                	if(userObject.optString(key).equals("已缴费") )
                 		checkBox1.setChecked(true);
                 	else
                 		checkBox1.setChecked(false);
@@ -807,15 +814,14 @@ public class BaodaoHandleActivity extends Activity {
 						@Override
 						 public void onClick(final View v) {
 			                final boolean checked = ((CheckBox) v).isChecked();
+			                if(checked && conditionVerify())
+			                {
+			                	((CheckBox) v).setChecked(false);
+			                	return;
+			                }
 			                if(!checked)
 			                {
-			                	if(completeResult.optInt("领取校园卡")==1 || completeResult.optInt("分配宿舍")==1 || completeResult.optInt("领宿舍钥匙")==1)
-			                	{
-			                		AppUtility.showErrorToast(BaodaoHandleActivity.this,
-			            					"已有后续步骤已完成，本步骤无法取消");
-			                		((CheckBox) v).setChecked(true);
-			                		return;
-			                	}
+			                	
 			                	new AlertDialog.Builder(BaodaoHandleActivity.this).setTitle("确认撤销吗？") 
 			                    .setIcon(android.R.drawable.ic_menu_info_details) 
 			                    .setCancelable(false)
@@ -835,11 +841,7 @@ public class BaodaoHandleActivity extends Activity {
 			                }
 			                else
 			                {
-			                	if(user.getsStatus().equals("财务人员"))
-			                		popPayDlg(key,v);
-			                	else if(user.getsStatus().equals("绿色通道审核员"))
-			                		popGreenDlg(key,v);
-			                	//updateBaodao(key,checked,null);
+			                	updateBaodao(key,checked,null);
 			                }
 
 						}
@@ -877,12 +879,6 @@ public class BaodaoHandleActivity extends Activity {
     	{
     		AppUtility.showErrorToast(BaodaoHandleActivity.this,
 					"请先进行身份验证");
-    		return true;
-    	}
-    	else if(completeResult.optInt("交学费")==0)
-    	{
-    		AppUtility.showErrorToast(BaodaoHandleActivity.this,
-					"请先交学费");
     		return true;
     	}
     	return false;

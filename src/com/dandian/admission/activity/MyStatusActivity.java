@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,6 +45,7 @@ import com.dandian.admission.db.DatabaseHelper;
 import com.dandian.admission.entity.User;
 import com.dandian.admission.util.AppUtility;
 import com.dandian.admission.util.Base64;
+import com.dandian.admission.util.DateHelper;
 import com.dandian.admission.util.DialogUtility;
 import com.dandian.admission.util.PrefUtility;
 import com.dandian.admission.util.TimeUtility;
@@ -70,7 +72,7 @@ public class MyStatusActivity extends Activity {
 	private LinearLayout failedLayout,ll_baodaoinput;
 	private User user;
 	private Button bt_changepwd,bt_notice_confirm;
-	private TextView tv_already_confirmed;
+	
 	private EditText et_shenfenzheng;
 	private ProgressDialog mypDialog;
 	private String ID;
@@ -80,11 +82,10 @@ public class MyStatusActivity extends Activity {
 		TextView title = (TextView) findViewById(R.id.tv_title);
 		bt_changepwd=(Button)findViewById(R.id.bt_changepwd);
 		ll_baodaoinput=(LinearLayout)findViewById(R.id.ll_baodaoinput);
-		tv_already_confirmed=(TextView)findViewById(R.id.tv_already_confirmed);
+		
 		bt_notice_confirm=(Button)findViewById(R.id.bt_notice_confirm);
 		bt_changepwd.setVisibility(View.GONE);
 		bt_notice_confirm.setVisibility(View.GONE);
-		tv_already_confirmed.setVisibility(View.GONE);
 		title.setVisibility(View.VISIBLE);
 		title.setText(getString(R.string.mystatus));
 		
@@ -133,9 +134,7 @@ public class MyStatusActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent();
-				intent.setClass(MyStatusActivity.this, CaptureActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				Intent intent = new Intent(MyStatusActivity.this, SelectStudentActivity.class);
 				startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
 			}
 		});
@@ -340,8 +339,20 @@ public class MyStatusActivity extends Activity {
 						AppUtility.showToastMsg(MyStatusActivity.this, loginStatus,1);
 					} else 
 					{
-						userObject.put("通知书确认",jo.optString("通知书确认"));
+						userObject.put("预报到",jo.optString("预报到"));
+						userObject.put("确认入读",jo.optString("确认入读"));
 						initContent();
+						if(jo.optString("预报到").equals("是"))
+						{
+							Intent intent = new Intent(MyStatusActivity.this, SchoolDetailActivity.class);
+							intent.putExtra("templateName", "调查问卷");
+							intent.putExtra("interfaceName", jo.optString("接口地址"));
+							intent.putExtra("title", jo.optString("标题"));
+							intent.putExtra("display", jo.optString("标题"));
+							intent.putExtra("autoClose", "是");
+							intent.putExtra("status", "进行中");
+							startActivity(intent);
+						}
 						
 					}
 				} catch (Exception e) {
@@ -372,30 +383,42 @@ public class MyStatusActivity extends Activity {
 		if(user.getUserType().equals("学生"))
 		{
 			bt_changepwd.setVisibility(View.VISIBLE);
-			if(userObject.optString("通知书确认").length()==0)
+			bt_notice_confirm.setVisibility(View.VISIBLE);
+			if(userObject.optString("预报到").equals("是"))
 			{
-				bt_notice_confirm.setVisibility(View.VISIBLE);
-				if(!userObject.optString("通知书EMS").equals("未发出"))
-				{
-					new AlertDialog.Builder(this)  
-					 .setIcon(android.R.drawable.ic_dialog_email)
-					 .setTitle(R.string.dialog_pleaseconfirmyournotice)
-					 .setCancelable(false)
-				     //.setMessage(R.string.dialog_pleaseconfirmyournotice)//设置显示的内容  
-				     .setPositiveButton(R.string.hasreceived,new DialogInterface.OnClickListener() {//添加确定按钮  
-				         @Override  
-				         public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件  
-				  
-				        	 confirmLetterOfAdmiss();
-				         }  
-				  
-				     }).setNegativeButton(R.string.notreceive,null).show();//在按键响应事件中显示此对话框 
-				}
+				bt_notice_confirm.setTextColor(getResources().getColor(R.color.green_dark));
+				bt_notice_confirm.setText("已确认入读");
+			}
+			else if(userObject.optString("预报到").equals("否"))
+			{
+				bt_notice_confirm.setTextColor(Color.RED);
+				bt_notice_confirm.setText("已放弃入读");
 			}
 			else
+				bt_notice_confirm.setTextColor(Color.BLACK);
+				
+			String mPassword=PrefUtility.get(Constants.PREF_LOGIN_PASS,"");
+			String tipDate=PrefUtility.get(Constants.PREF_CHANGEPWD_TIP_DATE, "");
+			String shenfenzheng=userObject.optString("默认口令");
+			boolean bneedTip=false;
+			if(tipDate.length()==0 || !tipDate.equals(DateHelper.getToday()))
+				bneedTip=true;
+			if(bneedTip && (mPassword.length()==0 || shenfenzheng.equals(mPassword)))
 			{
-				tv_already_confirmed.setVisibility(View.VISIBLE);
-				bt_notice_confirm.setVisibility(View.GONE);
+				new AlertDialog.Builder(this)  
+				 .setIcon(android.R.drawable.ic_menu_info_details)
+				 .setTitle("密码为初始密码，是否现在修改密码?")
+				 .setCancelable(false)
+			     //.setMessage(R.string.dialog_pleaseconfirmyournotice)//设置显示的内容  
+			     .setPositiveButton("确认",new DialogInterface.OnClickListener() {//添加确定按钮  
+			         @Override  
+			         public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件  
+			  
+			        	 bt_changepwd.performClick();
+			         }  
+			  
+			     }).setNegativeButton("取消",null).show();//在按键响应事件中显示此对话框 
+				PrefUtility.put(Constants.PREF_CHANGEPWD_TIP_DATE, DateHelper.getToday());
 			}
 		}
 		else
@@ -420,28 +443,40 @@ public class MyStatusActivity extends Activity {
 	}
 	private void confirmLetterOfAdmiss()
 	{
-		final EditText editText = new EditText(this);
+		if(userObject.optString("预报到").length()>0 && userObject.optString("组长审核通过").equals("已审核"))
+		{
+			AlertDialog.Builder inputDialog = 
+			        new AlertDialog.Builder(this);
+			    inputDialog.setTitle("提示")
+			    .setMessage("您的资料已审核，无法再修改此项")
+			    .setIcon(android.R.drawable.ic_dialog_info);
+			    inputDialog.setPositiveButton("确定",null)
+			    .show();
+			return;
+		}
+			
 	    AlertDialog.Builder inputDialog = 
 	        new AlertDialog.Builder(this);
-	    inputDialog.setTitle(R.string.dialog_pleaseinputyourletterno)
-	    .setView(editText)
-	    .setIcon(android.R.drawable.ic_dialog_info)
-	    .setCancelable(false);
-	    inputDialog.setPositiveButton(R.string.go, 
+	    inputDialog.setTitle(R.string.enter_confirm)
+	    .setMessage(R.string.dialog_pleaseinputyourletterno)
+	    .setIcon(android.R.drawable.ic_dialog_info);
+	    inputDialog.setPositiveButton(R.string.enter, 
 	        new DialogInterface.OnClickListener() {
 	        @Override
 	        public void onClick(DialogInterface dialog, int which) {
-	            
-	            String letterNo=editText.getText().toString();
-	            if(letterNo==null || letterNo.trim().length()==0)
-	            	AppUtility.showToastMsg(MyStatusActivity.this, getString(R.string.nocannotbeempty));
-	            else
-	            	letterConfirm(letterNo);
-	            
+	        	if(!userObject.optString("预报到").equals("是"))
+	        		letterConfirm("是");
 	        }
-	    }).setNegativeButton(R.string.cancel,null)
+	    }).setNegativeButton(R.string.giveup,
+	    	new DialogInterface.OnClickListener() {
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	        	if(!userObject.optString("预报到").equals("否"))
+	        		letterConfirm("否");
+	        }
+	    })
 	    .show();
-	    TimeUtility.popSoftKeyBoard(this, editText);
+	    
 	}
 	private void letterConfirm(String letterNo)
 	{
@@ -450,9 +485,9 @@ public class MyStatusActivity extends Activity {
 	    String language = locale.getCountry();
 		try {
 			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("action", "letterConfirm");
+			jsonObj.put("action", "enterConfirm");
 			jsonObj.put("编号", user.getId());
-			jsonObj.put("通知书编号", letterNo);
+			jsonObj.put("入读确认", letterNo);
 			jsonObj.put("language", language);
 			jsonObj.put("client", "Android");
 			dataResult = Base64.encode(jsonObj.toString().getBytes());
@@ -677,22 +712,17 @@ public class MyStatusActivity extends Activity {
 			if(resultCode == RESULT_OK){
 				Bundle bundle = data.getExtras();
 				//显示扫描到的内容
-				
-				String result = bundle.getString("result");
-				try {
-					result = new String(Base64.decode(result.getBytes("GBK")));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-				String[] resultStr=result.split("&");
-				if(resultStr.length>1)
+				if(bundle!=null)
 				{
-					String shenfenzheng=resultStr[0];
-					et_shenfenzheng.setText(shenfenzheng);
-					searchStudent();
-					
+					String result = bundle.getString("result");
+					if(result.length()>1)
+					{
+						Intent intent=new Intent(MyStatusActivity.this,BaodaoHandleActivity.class);
+						intent.putExtra("ID", result);
+						startActivity(intent);
+						
+					}
 				}
-				
 				//显示
 				//mImageView.setImageBitmap((Bitmap) data.getParcelableExtra("bitmap"));
 			}

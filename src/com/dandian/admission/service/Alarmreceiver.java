@@ -46,7 +46,7 @@ import com.dandian.admission.db.InitData;
 import com.dandian.admission.entity.DownloadSubject;
 import com.dandian.admission.entity.MyClassSchedule;
 import com.dandian.admission.entity.NoticeClass;
-import com.dandian.admission.entity.Student;
+import com.dandian.admission.entity.NewStudent;
 import com.dandian.admission.entity.StudentPic;
 import com.dandian.admission.entity.Suggestions;
 import com.dandian.admission.entity.TeacherInfo;
@@ -74,7 +74,7 @@ public class Alarmreceiver extends BroadcastReceiver {
 	private Dao<User, Integer> userDao;
 	private Dao<DownloadSubject,Integer> downloadSubjectDao;
 	List<TeacherInfo> teacherInfoList;
-	List<Student> studentList;
+	List<NewStudent> studentList;
 	List<StudentPic> studentPicList;
 	User userInfo;
 	Suggestions suggestions;
@@ -450,12 +450,12 @@ public class Alarmreceiver extends BroadcastReceiver {
 	 * @param studentList
 	 * @return
 	 */
-	public String getChangestudentinfo(List<Student> studentList) {
+	public String getChangestudentinfo(List<NewStudent> studentList) {
 		if (studentList != null && studentList.size() > 0) {
 			Log.d(TAG, "studentList.size():" + studentList.size());
 			JSONArray jsonArray = new JSONArray();
 			try {
-				for (Student student : studentList) {
+				for (NewStudent student : studentList) {
 					JSONObject jo = new JSONObject();
 					jo.put("用户较验码", checkCode);
 					jo.put("编号", student.getStudentID());

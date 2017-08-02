@@ -27,7 +27,7 @@ import com.dandian.admission.entity.NoticeClass;
 import com.dandian.admission.entity.QueryTheMarkOfStudent;
 import com.dandian.admission.entity.Schedule;
 import com.dandian.admission.entity.StatisticsScoreOfStudents;
-import com.dandian.admission.entity.Student;
+import com.dandian.admission.entity.NewStudent;
 import com.dandian.admission.entity.StudentAttence;
 import com.dandian.admission.entity.StudentPic;
 import com.dandian.admission.entity.StudentScore;
@@ -120,7 +120,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionsSourse, TestEntity.class);
 			TableUtils.createTable(connectionsSourse, Equipment.class);
 			TableUtils.createTable(connectionsSourse, User.class);
-			TableUtils.createTable(connectionsSourse, Student.class);
+			TableUtils.createTable(connectionsSourse, NewStudent.class);
 			TableUtils.createTable(connectionsSourse, Schedule.class);
 			TableUtils.createTable(connectionsSourse, TeacherInfo.class);
 			TableUtils.createTable(connectionsSourse, StudentAttence.class);
@@ -168,7 +168,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSourse, TeacherInfo.class, true);
 			TableUtils.dropTable(connectionSourse, Equipment.class, true);  
 			TableUtils.dropTable(connectionSourse, User.class, true);
-			TableUtils.dropTable(connectionSourse, Student.class, true);
+			TableUtils.dropTable(connectionSourse, NewStudent.class, true);
 //			TableUtils.dropTable(connectionSourse, Content.class, true);
 			
 			TableUtils.dropTable(connectionSourse, TestStartEntity.class, true);

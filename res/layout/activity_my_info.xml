@@ -90,15 +90,6 @@
                     android:layout_height="36dp"
                     android:text="@string/settings_notice_confirm" />
 
-                <TextView
-                    android:id="@+id/tv_already_confirmed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:background="@drawable/textview_rect_stroke"
-                    android:gravity="center"
-                    android:text="@string/settings_notice_already_confirm"
-                    android:textColor="@color/green" />
 
             </LinearLayout>
 
@@ -152,8 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:drawableLeft="@drawable/scancode"
-                android:text="扫描二维码" />
+                android:text="我负责的新生" />
         </LinearLayout>
 
         <ListView

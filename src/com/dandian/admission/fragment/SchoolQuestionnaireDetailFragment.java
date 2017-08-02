@@ -43,6 +43,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -167,6 +168,17 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 									"---------" + questionnaireList.getStatus());
 							tvTitle.setText(questionnaireList.getTitle());
 							questions = questionnaireList.getQuestions();
+							status=questionnaireList.getStatus();
+							if (status.equals("已结束") || status.equals("未开始")) {
+								isEnable = false;
+								lyRight.setVisibility(View.INVISIBLE);
+							}
+							else
+							{
+								isEnable=true;
+								tvRight.setVisibility(View.VISIBLE);
+							}
+							
 							adapter.notifyDataSetChanged();
 						}
 					} catch (JSONException e) {
@@ -868,8 +880,10 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 		for (int i = 0; i < questions.size(); i++) {
 			String mStatus = questions.get(i).getStatus();
 			if(!mStatus.equals("图片")){
+				String title=questions.get(i).getTitle();
 				String usersAnswer = questions.get(i).getUsersAnswer();
 				String isRequired = questions.get(i).getIsRequired();//是否必填
+				String validate=questions.get(i).getValidate();
 				if(AppUtility.isNotEmpty(isRequired)){
 					if(isRequired.equals("是")){
 						if(AppUtility.isNotEmpty(usersAnswer)){
@@ -889,6 +903,32 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 					}else{
 						Log.d(TAG, "222"+questions.get(i).getTitle());
 						AppUtility.showToastMsg(getActivity(),getString(R.string.pleasefinishform));
+						myListview.setSelection(i);
+						return null;
+					}
+				}
+				if(AppUtility.isNotEmpty(validate)){
+					if(validate.equals("手机号") && !AppUtility.checkPhone(usersAnswer))
+					{
+						AppUtility.showToastMsg(getActivity(),title+",格式不正确");
+						myListview.setSelection(i);
+						return null;
+					}
+					else if(validate.equals("浮点型") && !AppUtility.isDecimal(usersAnswer))
+					{
+						AppUtility.showToastMsg(getActivity(),title+",必须是浮点型数字");
+						myListview.setSelection(i);
+						return null;
+					}
+					else if(validate.equals("整型") && !AppUtility.isInteger(usersAnswer))
+					{
+						AppUtility.showToastMsg(getActivity(),title+",必须整形数字");
+						myListview.setSelection(i);
+						return null;
+					}
+					else if(validate.equals("邮箱") && !AppUtility.checkEmail(usersAnswer))
+					{
+						AppUtility.showToastMsg(getActivity(),title+",邮箱格式不正确");
 						myListview.setSelection(i);
 						return null;
 					}
@@ -1065,7 +1105,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 						
 			final Question question = (Question) getItem(position);
 			convertView = inflater.inflate(R.layout.school_questionnaire_item, parent, false);
-			ViewHolder holder = new ViewHolder();
+			final ViewHolder holder = new ViewHolder();
 			holder.title = (TextView) convertView.findViewById(R.id.tv_questionnaire_name);
 			holder.radioGroup = (RadioGroup) convertView.findViewById(R.id.rg_choose);
 			holder.multipleChoice = (NonScrollableListView) convertView.findViewById(R.id.lv_choose);
@@ -1076,30 +1116,28 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			holder.bt_date=(Button)convertView.findViewById(R.id.bt_date);
 			holder.bt_datetime=(Button)convertView.findViewById(R.id.bt_datetime);
 			holder.sp_select=(Spinner)convertView.findViewById(R.id.sp_select);
+			holder.sp_select1=(Spinner)convertView.findViewById(R.id.sp_select1);
 			holder.etAnswer.setOnFocusChangeListener(mListener);
 			holder.etAnswer.setTag(position);
 			
 			String mStatus = question.getStatus();
 			
 			holder.title.setText(position+1+"."+question.getTitle());
-			if(!isEnable){
-				String remark = question.getRemark();
-				Log.d(TAG, "-----------remark:"+remark);
+			String remark = question.getRemark();
+			if(AppUtility.isNotEmpty(remark)){
+				holder.tvRemark.setText(remark);
+				holder.tvRemark.setVisibility(View.VISIBLE);
 				
-				holder.tvRemark.setVisibility(View.INVISIBLE);
-				if(AppUtility.isNotEmpty(remark) && !mStatus.equals("单行文本输入框") && !mStatus.equals("图片")){
-					holder.tvRemark.setText(remark);
-					holder.tvRemark.setVisibility(View.VISIBLE);
-					
-					if(remark.length()>7 && (remark.substring(0, 7).equals("答题状态:错误") || remark.indexOf("error")>0)){
-						holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.red_color));
-					}else if(remark.length()>7 && (remark.substring(0, 7).equals("答题状态:正确") || remark.indexOf("right")>0)){
-						holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.title_nor));
-					}
-					else
-						holder.tvRemark.setTextColor(Color.BLUE);
+				if(remark.substring(0, 2).equals("通过")){
+					holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.title_nor));
+				}else if(remark.substring(0, 2).equals("拒绝")){
+					holder.tvRemark.setTextColor(Color.RED);
 				}
+				else
+					holder.tvRemark.setTextColor(Color.BLUE);
 			}
+			else
+				holder.tvRemark.setVisibility(View.GONE);
 			if (mStatus.equals("单选")) {
 				holder.imageGridView.setVisibility(View.GONE);
 				holder.radioGroup.setVisibility(View.VISIBLE);
@@ -1109,6 +1147,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_date.setVisibility(View.GONE);
 				holder.bt_datetime.setVisibility(View.GONE);
 				holder.sp_select.setVisibility(View.GONE);
+				holder.sp_select1.setVisibility(View.GONE);
 				final String[] answers = question.getOptions();
 				holder.radioGroup.removeAllViews();
 				int checkIndex = -1;
@@ -1152,6 +1191,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_date.setVisibility(View.GONE);
 				holder.bt_datetime.setVisibility(View.GONE);
 				holder.sp_select.setVisibility(View.GONE);
+				holder.sp_select1.setVisibility(View.GONE);
 				CheckBoxAdapter checkBoxAdapter = new CheckBoxAdapter(
 						getActivity(), position, question);
 				holder.multipleChoice.setAdapter(checkBoxAdapter);
@@ -1179,6 +1219,8 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			        } else {
 			        	holder.etAnswer.clearFocus();
 			        }
+					if(question.getMaxLetter()>0)
+						holder.etAnswer.setFilters(new InputFilter[]{new InputFilter.LengthFilter(question.getMaxLetter())}); 
 					holder.etAnswer.addTextChangedListener(new TextWatcher() {
 						
 					@Override
@@ -1214,6 +1256,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_date.setVisibility(View.GONE);
 				holder.bt_datetime.setVisibility(View.GONE);
 				holder.sp_select.setVisibility(View.GONE);
+				holder.sp_select1.setVisibility(View.GONE);
 				Log.d(TAG, "-----------------" + picturePaths.size());
 				List<ImageItem> images = question.getImages();
 				if(images != null){
@@ -1261,6 +1304,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_date.setVisibility(View.VISIBLE);
 				holder.bt_datetime.setVisibility(View.GONE);
 				holder.sp_select.setVisibility(View.GONE);
+				holder.sp_select1.setVisibility(View.GONE);
 				if(!AppUtility.isNotEmpty(question.getUsersAnswer()))
 				{
 					question.setUsersAnswer(DateHelper.getToday());
@@ -1316,6 +1360,7 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_date.setVisibility(View.GONE);
 				holder.bt_datetime.setVisibility(View.VISIBLE);
 				holder.sp_select.setVisibility(View.GONE);
+				holder.sp_select1.setVisibility(View.GONE);
 				if(!AppUtility.isNotEmpty(question.getUsersAnswer()))
 				{
 					question.setUsersAnswer(DateHelper.getToday());
@@ -1346,6 +1391,8 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				holder.bt_date.setVisibility(View.GONE);
 				holder.bt_datetime.setVisibility(View.GONE);
 				holder.sp_select.setVisibility(View.VISIBLE);
+				holder.sp_select1.setVisibility(View.GONE);
+				holder.sp_select.setEnabled(isEnable);
 				ArrayAdapter<String> aa = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,question.getOptions());
 				holder.sp_select.setAdapter(aa);
 				int pos=0;
@@ -1371,6 +1418,60 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 				});
 				
 			}
+			else if (mStatus.equals("二级下拉")) {
+				holder.imageGridView.setVisibility(View.GONE);
+				holder.radioGroup.setVisibility(View.GONE);
+				holder.multipleChoice.setVisibility(View.GONE);
+				holder.etAnswer.setVisibility(View.GONE);
+				holder.tvAnswer.setVisibility(View.GONE);
+				holder.bt_date.setVisibility(View.GONE);
+				holder.bt_datetime.setVisibility(View.GONE);
+				holder.sp_select.setVisibility(View.VISIBLE);
+				holder.sp_select1.setVisibility(View.VISIBLE);
+				holder.sp_select.setEnabled(isEnable);
+				holder.sp_select1.setEnabled(isEnable);
+				ArrayAdapter<String> aa = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,question.getOptions());
+				holder.sp_select.setAdapter(aa);
+				int pos=0;
+				for(int i=0;i<question.getOptions().length;i++)
+				{
+					if(question.getOptions()[i].equalsIgnoreCase(question.getUsersAnswerOne()))
+						pos=i;
+				}
+				holder.sp_select.setSelection(pos);
+				holder.sp_select.setOnItemSelectedListener(new OnItemSelectedListener() {
+					
+					@Override
+					public void onItemSelected(AdapterView<?> parent,
+							View view, int position, long id) {
+						// TODO Auto-generated method stub
+						question.setUsersAnswerOne(question.getOptions()[position]);
+						reloadSpinner2(holder.sp_select1,question);
+					}
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+				reloadSpinner2(holder.sp_select1,question);
+				
+				holder.sp_select1.setOnItemSelectedListener(new OnItemSelectedListener() {
+					
+					@Override
+					public void onItemSelected(AdapterView<?> parent,
+							View view, int position, long id) {
+						// TODO Auto-generated method stub
+						question.setUsersAnswer(holder.sp_select1.getSelectedItem().toString());
+					}
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+				
+			}
 			return convertView;
 		}
 
@@ -1384,12 +1485,36 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			NonScrollableListView multipleChoice;
 			NonScrollableGridView imageGridView;
 			Spinner sp_select;
+			Spinner sp_select1;
 			Button bt_date;
 			Button bt_datetime;
 		}
 		
 	}
-	
+	private void reloadSpinner2(Spinner sp,Question question)
+	{
+		JSONArray subOptionsJson=question.getSubOptions().optJSONArray(question.getUsersAnswerOne());
+		if(subOptionsJson!=null && subOptionsJson.length()>0)
+		{
+			String [] subOptions=new String[subOptionsJson.length()];
+			int pos=0;
+			for(int i=0;i<subOptionsJson.length();i++)
+			{
+				try {
+					subOptions[i]=subOptionsJson.getString(i);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(question.getUsersAnswer().equals(subOptions[i]))
+					pos=i;
+					
+			}
+			ArrayAdapter<String> bb = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item,subOptions);
+			sp.setAdapter(bb);
+			sp.setSelection(pos);
+		}
+	}
 	/**
 	 * 
 	 *  #(c) ruanyun PocketCampus <br/>

@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
+import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -351,7 +353,16 @@ public class SchoolNoticeDetailFragment extends Fragment {
 		    	}
 		    	else
 		    	{
-		    		TabHostActivity.schoolService.downLoadUpdate(mUrl, 1003);
+		    		//TabHostActivity.schoolService.downLoadUpdate(mUrl, 1003);
+		    		DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(getActivity().DOWNLOAD_SERVICE);  
+		    		Uri uri = Uri.parse(mUrl);  
+		    		Request request = new Request(uri); 
+		    		request.setDestinationUri(Uri.fromFile(file)); 
+		    		request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
+		    		//request.setDestinationInExternalFilesDir(WebSiteActivity.this, null, "PacketCampus");
+		    		downloadManager.enqueue(request);  
+		    		AppUtility.showToastMsg(getActivity(), "已开始后台下载..");
+		    		
 		    		
 		    	}
 	        }

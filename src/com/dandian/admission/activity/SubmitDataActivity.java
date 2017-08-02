@@ -207,7 +207,7 @@ public class SubmitDataActivity extends Activity implements OnItemClickListener 
 				holder.tv_finish_persent = (TextView) convertView
 						.findViewById(R.id.tv_finish_persent);
 				holder.pb_finish_persent = (HorizontalProgressBarWithNumber) convertView.findViewById(R.id.pb_finish_persent);
-
+				holder.iv_shenhe=(ImageView) convertView.findViewById(R.id.iv_shenhe);
 				convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
@@ -220,7 +220,18 @@ public class SubmitDataActivity extends Activity implements OnItemClickListener 
 			aq = new AQuery(convertView);
 			
 			aq.id(holder.photo).image(obj.optString("Í¼±ê"),true,true,0,R.drawable.ic_launcher);
-		
+			if(obj.optString("ÉóºË×´Ì¬")!=null && obj.optString("ÉóºË×´Ì¬").length()>0)
+			{
+				holder.iv_shenhe.setVisibility(View.VISIBLE);
+				if(obj.optString("ÉóºË×´Ì¬").equals("ÒÑÉóºË"))
+					holder.iv_shenhe.setImageResource(R.drawable.needsubmit_hasreview);
+				else if(obj.optString("ÉóºË×´Ì¬").equals("´ýÉóºË"))
+					holder.iv_shenhe.setImageResource(R.drawable.needsubmit_waitreview);
+				else if(obj.optString("ÉóºË×´Ì¬").equals("Î´Íê³É") || obj.optString("ÉóºË×´Ì¬").equals("±»¾Ü¾ø"))
+					holder.iv_shenhe.setImageResource(R.drawable.needsubmit_unfinish);
+				else
+					holder.iv_shenhe.setVisibility(View.GONE);
+			}
 			
 			return convertView;
 		}
@@ -231,7 +242,7 @@ public class SubmitDataActivity extends Activity implements OnItemClickListener 
 		TextView name;
 		TextView tv_finish_persent;
 		HorizontalProgressBarWithNumber pb_finish_persent;
-		
+		ImageView iv_shenhe;
 	}
 
 	@Override

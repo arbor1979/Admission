@@ -326,7 +326,7 @@ public class TabSchoolActivity extends Activity {
 			jo.put("用户较验码", checkCode);
 			jo.put("DATETIME", datatime);
 			jo.put("LASTID", lastId);
-			jo.put("发布对象", user.getsClass());
+			jo.put("发布对象", user.getRootDomain());
 			jo.put("language", language);
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block

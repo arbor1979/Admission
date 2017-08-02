@@ -24,7 +24,7 @@ public class CampusAPI {
 	public static String contractUrl = "http://www.dandian.net/company/ICampus-contract.php"; // 甯歌闂�????�????
 	public static String aboutusUrl = "http://www.dandian.net/company/ICampus-aboutus.php"; // 甯歌闂�????�????
 	public static String howtouse = "http://www.moodle360.cn/howtouse.php";
-	public static String schoolBaseUrl="http://oainfo.xmcu.cn/general/EDU/NewStudent/mobiles/";
+	public static String schoolBaseUrl="http://oa.xmgslx.com/general/EDU/NewStudent/mobiles/";
 	public static String DOWNLOAD_DELETE = "http://laoshi.dandian.net/KeJianDelete.php";
 
 	public static void request(final String url, final CampusParameters params,

@@ -6,6 +6,8 @@
     <string name="LoginTitle">厦门工商旅游学校 \n 迎新助手</string>
     <string name="menu_settings">Settings</string>
     <string name="go">确定</string>
+    <string name="enter">入读</string>
+    <string name="enter_confirm">入读确认</string>
     <string name="label_register">注册</string>
     <string name="register_address">注册邮箱</string>
     <string name="register_name">真实姓名</string>
@@ -117,8 +119,8 @@
     <string name="settings_schedule">上课时间表</string>
     <string name="settings_contract">软件授权协议</string>
     <string name="settings_changePwd">修改密码</string>
-    <string name="settings_notice_confirm">通知书确认</string>
-    <string name="settings_notice_already_confirm">通知书已确认</string>
+    <string name="settings_notice_confirm">入读确认</string>
+    <string name="settings_notice_already_confirm">已确认入读</string>
     <string name="settings_aboutus">关于我们</string>
     <string name="settings_userId">用户名</string>
     <string name="settings_newpwd">密码</string>
@@ -251,6 +253,7 @@
     <string name="pize">拍照</string>
     <string name="location_picture">本地图片</string>
     <string name="cancel">取消</string>
+     <string name="giveup">放弃</string>
     <string name="errcode_success">发送成功</string>
     <string name="errcode_cancel">发送取消</string>
     <string name="errcode_deny">发送被拒绝</string>
@@ -334,7 +337,7 @@
     <string name="trace">追踪</string>
     <string name="error_mobile_number_required">请输入手机号</string>
     <string name="dialog_pleaseconfirmyournotice">如果已收到通知书，请先进行通知书确认</string>
-    <string name="dialog_pleaseinputyourletterno">请输入你的通知书编号,如：GZ170001</string>
+    <string name="dialog_pleaseinputyourletterno">是否确认入读本校？如选入读，需在随后的页面完成个人资料，如选放弃，需要到招生办申请退档。</string>
     <string name="nocannotbeempty">通知书编号不能为空</string>
     <string name="hasreceived">已收到</string>
     <string name="notreceive">未收到</string>

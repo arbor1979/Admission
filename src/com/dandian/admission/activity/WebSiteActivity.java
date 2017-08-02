@@ -509,13 +509,7 @@ public class WebSiteActivity extends Activity {
         	}
         	else
         	{
-        		/*
-        		if(!IntentUtility.openIntent(WebSiteActivity.this, intent,false))
-        		{
-        			TabHostActivity.schoolService.downLoadUpdate(url, 1003);
-        			AppUtility.showToastMsg(WebSiteActivity.this, getString(R.string.startdownloadbackground));
-        		}
-        		*/
+        		
         		ArrayList<String> tempList =new ArrayList<String>();
         		tempList.add("audio/*");
         		tempList.add("video/*");
@@ -524,7 +518,6 @@ public class WebSiteActivity extends Activity {
         		{
         			if(!IntentUtility.openIntent(WebSiteActivity.this, intent,false))
         			{
-        			//TabHostActivity.schoolService.downLoadUpdate(url, 1003);
         				downloadFile(url,file);
         			}
         		}

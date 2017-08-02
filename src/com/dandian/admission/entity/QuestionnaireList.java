@@ -94,14 +94,28 @@ public class QuestionnaireList implements Serializable {
 		private String title;
 		private String status;
 		private String usersAnswer;
+		private String usersAnswerOne;
 		private String remark;
 		private int lines;
 		private String options[];
+		private JSONObject subOptions;
+		public JSONObject getSubOptions() {
+			return subOptions;
+		}
+
+
+
+		public void setSubOptions(JSONObject subOptions) {
+			this.subOptions = subOptions;
+		}
+
 		private List<ImageItem> images; 
 		private String isRequired;
 		private String needCut;
 		private String addcallback;
 		private String delcallback;
+		private int maxLetter;
+		private String validate;
 		public Question(JSONObject jo) {
 			title = jo.optString("题目");
 			status = jo.optString("类型");
@@ -114,6 +128,8 @@ public class QuestionnaireList implements Serializable {
 					options[i] = ja.optString(i);
 				}
 			}
+			subOptions= jo.optJSONObject("子选项");
+			
 			isRequired = jo.optString("是否必填");
 			lines=jo.optInt("行数");
 			needCut=jo.optString("剪裁");
@@ -128,10 +144,49 @@ public class QuestionnaireList implements Serializable {
 				}
 			}else{
 				usersAnswer = jo.optString("用户答案");
+				usersAnswerOne=jo.optString("用户答案一级");
 			}
+			maxLetter=jo.optInt("字符数");
+			validate=jo.optString("校验");
 		}
 
 		
+
+		public int getMaxLetter() {
+			return maxLetter;
+		}
+
+
+
+		public void setMaxLetter(int maxLetter) {
+			this.maxLetter = maxLetter;
+		}
+
+
+
+		public String getValidate() {
+			return validate;
+		}
+
+
+
+		public void setValidate(String validate) {
+			this.validate = validate;
+		}
+
+
+
+		public String getUsersAnswerOne() {
+			return usersAnswerOne;
+		}
+
+
+
+		public void setUsersAnswerOne(String usersAnswerOne) {
+			this.usersAnswerOne = usersAnswerOne;
+		}
+
+
 
 		public String getAddcallback() {
 			return addcallback;
