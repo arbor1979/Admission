@@ -916,13 +916,13 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 					}
 					else if(validate.equals("浮点型") && !AppUtility.isDecimal(usersAnswer))
 					{
-						AppUtility.showToastMsg(getActivity(),title+",必须是浮点型数字");
+						AppUtility.showToastMsg(getActivity(),title+",必须是浮点型数字,如:99.9");
 						myListview.setSelection(i);
 						return null;
 					}
 					else if(validate.equals("整型") && !AppUtility.isInteger(usersAnswer))
 					{
-						AppUtility.showToastMsg(getActivity(),title+",必须整形数字");
+						AppUtility.showToastMsg(getActivity(),title+",必须整形数字,如:99");
 						myListview.setSelection(i);
 						return null;
 					}
@@ -1127,11 +1127,13 @@ public class SchoolQuestionnaireDetailFragment extends Fragment {
 			if(AppUtility.isNotEmpty(remark)){
 				holder.tvRemark.setText(remark);
 				holder.tvRemark.setVisibility(View.VISIBLE);
-				
-				if(remark.substring(0, 2).equals("通过")){
-					holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.title_nor));
-				}else if(remark.substring(0, 2).equals("拒绝")){
-					holder.tvRemark.setTextColor(Color.RED);
+				if(remark!=null && remark.length()>=2)
+				{
+					if(remark.substring(0, 2).equals("通过")){
+						holder.tvRemark.setTextColor(getActivity().getResources().getColor(R.color.title_nor));
+					}else if(remark.substring(0, 2).equals("拒绝")){
+						holder.tvRemark.setTextColor(Color.RED);
+					}
 				}
 				else
 					holder.tvRemark.setTextColor(Color.BLUE);

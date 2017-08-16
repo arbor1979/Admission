@@ -76,6 +76,7 @@ public class SchoolBlogFragment extends Fragment implements IXListViewListener,R
 	private List<Blog> noticesList=new ArrayList<Blog>();
 	RadioButton btn21,btn23;
 	private int pagesize=20;
+	private boolean isLoading=false;
 	AQuery aq;
 	Button btn_right;
 	LinearLayout lyRight;
@@ -92,79 +93,83 @@ public class SchoolBlogFragment extends Fragment implements IXListViewListener,R
 
 			case 0:
 				showProgress(false);
-			String result = msg.obj.toString();
-			String resultStr=null;
-			//byte[] contact64byte = null;
-			if (AppUtility.isNotEmpty(result)) {
-				try {
-					resultStr = new String(Base64.decode(result
-							.getBytes("GBK")));
-				} catch (UnsupportedEncodingException e) {
-					showFetchFailedView();
-					e.printStackTrace();
-				}
-			}else{
-				showFetchFailedView();
-			}
-			//resultStr=ZLibUtils.decompress(contact64byte);
-			if (AppUtility.isNotEmpty(resultStr)) {
-				try {
-					JSONObject jo = new JSONObject(resultStr);
-					String res = jo.optString("结果");
-					if(AppUtility.isNotEmpty(res)){
-						AppUtility.showToastMsg(getActivity(), res);
-					}else{
-						final BlogsItem noticesItem = new BlogsItem(jo);
-						Log.d(TAG, "--------noticesItem.getNotices().size():"
-								+ noticesItem.getNotices().size());
-						List<Blog> notices = noticesItem.getNotices();
-						
-						myListview.stopLoadMore();
-						if(noticesItem.getTitle()!=null && noticesItem.getTitle().length()>0)
-							tvTitle.setText(noticesItem.getTitle());
-						for(Blog item:notices)
-							noticesList.add(item);
-						//if(notices.size()>0)
-						adapter.notifyDataSetChanged();
-						if(notices.size()<pagesize)
-						{
-							//AppUtility.showErrorToast(getActivity(), getString(R.string.loadedalldata));
-							myListview.setPullLoadEnable(false);
-						}
-						if(noticesItem.getRightButton()!=null && noticesItem.getRightButton().length()>0)
-						{
-							btn_right.setVisibility(View.VISIBLE);
-							btn_right.setTextSize(13);
-							btn_right.setText(noticesItem.getRightButton());
-							lyRight.setOnClickListener(new OnClickListener(){
-
-								@Override
-								public void onClick(View v) {
-									Intent intent =new Intent(getActivity(),SchoolDetailActivity.class);
-									intent.putExtra("templateName", "调查问卷");
-									int pos=interfaceName.indexOf("?");
-									String preUrl=interfaceName;
-									if(pos>-1)
-										preUrl=interfaceName.substring(0, pos);
-									intent.putExtra("interfaceName", preUrl+noticesItem.getRightButtonUrl());
-									intent.putExtra("title", title);
-									intent.putExtra("status", "进行中");
-									intent.putExtra("autoClose", "是");
-									startActivityForResult(intent, 101);
-								}
-							
-							});
-						}
-						
+				
+				String result = msg.obj.toString();
+				String resultStr=null;
+				//byte[] contact64byte = null;
+				if (AppUtility.isNotEmpty(result)) {
+					try {
+						resultStr = new String(Base64.decode(result
+								.getBytes("GBK")));
+					} catch (UnsupportedEncodingException e) {
+						showFetchFailedView();
+						e.printStackTrace();
 					}
-				} catch (JSONException e) {
+				}else{
 					showFetchFailedView();
-					e.printStackTrace();
-				} 
-			}else{
-				showFetchFailedView();
-			}
-			break;
+				}
+				//resultStr=ZLibUtils.decompress(contact64byte);
+				if (AppUtility.isNotEmpty(resultStr)) {
+					try {
+						JSONObject jo = new JSONObject(resultStr);
+						String res = jo.optString("结果");
+						if(AppUtility.isNotEmpty(res)){
+							AppUtility.showToastMsg(getActivity(), res);
+						}else{
+							final BlogsItem noticesItem = new BlogsItem(jo);
+							Log.d(TAG, "--------noticesItem.getNotices().size():"
+									+ noticesItem.getNotices().size());
+							List<Blog> notices = noticesItem.getNotices();
+							
+							myListview.stopLoadMore();
+							if(noticesItem.getTitle()!=null && noticesItem.getTitle().length()>0)
+								tvTitle.setText(noticesItem.getTitle());
+							for(Blog item:notices)
+							{
+								noticesList.add(item);
+							}
+							//if(notices.size()>0)
+							adapter.notifyDataSetChanged();
+							if(notices.size()<pagesize)
+							{
+								myListview.setPullLoadEnable(false);
+							}
+							else
+								myListview.setPullLoadEnable(true);
+							if(noticesItem.getRightButton()!=null && noticesItem.getRightButton().length()>0)
+							{
+								btn_right.setVisibility(View.VISIBLE);
+								btn_right.setTextSize(13);
+								btn_right.setText(noticesItem.getRightButton());
+								lyRight.setOnClickListener(new OnClickListener(){
+	
+									@Override
+									public void onClick(View v) {
+										Intent intent =new Intent(getActivity(),SchoolDetailActivity.class);
+										intent.putExtra("templateName", "调查问卷");
+										int pos=interfaceName.indexOf("?");
+										String preUrl=interfaceName;
+										if(pos>-1)
+											preUrl=interfaceName.substring(0, pos);
+										intent.putExtra("interfaceName", preUrl+noticesItem.getRightButtonUrl());
+										intent.putExtra("title", title);
+										intent.putExtra("status", "进行中");
+										intent.putExtra("autoClose", "是");
+										startActivityForResult(intent, 101);
+									}
+								
+								});
+							}
+							
+						}
+					} catch (JSONException e) {
+						showFetchFailedView();
+						e.printStackTrace();
+					} 
+				}else{
+					showFetchFailedView();
+				}
+				break;
 			case 1:
 				result = msg.obj.toString();
 				resultStr=null;
@@ -291,9 +296,10 @@ public class SchoolBlogFragment extends Fragment implements IXListViewListener,R
 	private void getNoticesList(boolean flag)
 	{
 		showProgress(flag);
+		isLoading=true;
 		long datatime = System.currentTimeMillis();
 		String checkCode = PrefUtility.get(Constants.PREF_CHECK_CODE, "");
-		String user_id=PrefUtility.get(Constants.PREF_LOGIN_ID, "");
+		String user_id=PrefUtility.get(Constants.PREF_LOGIN_NAME, "");
 		JSONObject jo = new JSONObject();
 		Locale locale = getResources().getConfiguration().locale;
 	    String language = locale.getCountry();
@@ -320,18 +326,19 @@ public class SchoolBlogFragment extends Fragment implements IXListViewListener,R
 			@Override
 			public void onIOException(IOException e) {
 				// TODO Auto-generated method stub
-
+				isLoading=false;
 			}
 
 			@Override
 			public void onError(CampusException e) {
 				Log.d(TAG, "----response" + e.getMessage());
-
+				isLoading=false;
 			}
 
 			@Override
 			public void onComplete(String response) {
 				Log.d(TAG, "----response" + response);
+				isLoading=false;
 				Message msg = new Message();
 				msg.what = 0;
 				msg.obj = response;
@@ -419,12 +426,12 @@ public class SchoolBlogFragment extends Fragment implements IXListViewListener,R
 			holder.content.setText(notice.getContent());
 			holder.time.setText(notice.getPosttime());
 			
-			String userid=PrefUtility.get(Constants.PREF_LOGIN_ID, "");
+			String userid=PrefUtility.get(Constants.PREF_LOGIN_NAME, "");
 			if(user.getUserType().equals("老师"))
 			{
 				if(notice.getAnswerContent()==null || notice.getAnswerContent().length()==0)
 				{
-					if(user.getsStatus().equals("报到操作员") || user.getsStatus().equals("游客"))
+					if(user.getsStatus().equals("班主任") || user.getsStatus().equals("迎新管理员"))
 						holder.ib_delete.setVisibility(View.VISIBLE);
 					else
 						holder.ib_delete.setVisibility(View.GONE);
@@ -556,7 +563,8 @@ public class SchoolBlogFragment extends Fragment implements IXListViewListener,R
 	@Override
 	public void onLoadMore() {
 		// TODO Auto-generated method stub
-		getNoticesList(false);
+		if(!isLoading)
+			getNoticesList(false);
 	}
 	@Override
 	public void onRefresh() {

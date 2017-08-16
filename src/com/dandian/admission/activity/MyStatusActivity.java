@@ -717,10 +717,7 @@ public class MyStatusActivity extends Activity {
 					String result = bundle.getString("result");
 					if(result.length()>1)
 					{
-						Intent intent=new Intent(MyStatusActivity.this,BaodaoHandleActivity.class);
-						intent.putExtra("ID", result);
-						startActivity(intent);
-						
+
 					}
 				}
 				//œ‘ æ

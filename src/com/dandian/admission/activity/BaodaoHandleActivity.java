@@ -85,6 +85,7 @@ public class BaodaoHandleActivity extends Activity {
 	private String ID;
 	private ProgressDialog mypDialog;
 	private User user;
+	private boolean changed=false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,6 +100,11 @@ public class BaodaoHandleActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				if(changed)
+				{
+					Intent resultIntent = new Intent();
+					setResult(RESULT_OK, resultIntent);
+				}
 				finish();
 			}
 			
@@ -238,7 +244,7 @@ public class BaodaoHandleActivity extends Activity {
 						AppUtility.showToastMsg(BaodaoHandleActivity.this, loginStatus,1);
 					} else 
 					{
-						
+						changed=true;
 						String action=jo.optString("action");
 						if(jo.optString("完成情况")!=null && jo.optString("完成情况").length()>0)
 							completeResult.put(action, jo.optInt("完成情况"));
@@ -412,6 +418,12 @@ public class BaodaoHandleActivity extends Activity {
                 checkBox4.setEnabled(false);
                 checkBox5.setEnabled(false);
                 checkBox6.setEnabled(false);
+                checkBox1.setVisibility(View.GONE);
+            	checkBox2.setVisibility(View.GONE);
+            	checkBox3.setVisibility(View.GONE);
+            	checkBox4.setVisibility(View.GONE);
+            	checkBox5.setVisibility(View.GONE);
+            	checkBox6.setVisibility(View.GONE);
                 ImageView iv_complete=(ImageView)view.findViewById(R.id.iv_complete);
                 title.setText(key);
                 //detail.setText(userObject.optString(key));
@@ -421,11 +433,6 @@ public class BaodaoHandleActivity extends Activity {
                 	detail.setVisibility(View.GONE);
                 	ll_checkbox.setVisibility(View.VISIBLE);
                 	checkBox1.setVisibility(View.VISIBLE);
-                	checkBox2.setVisibility(View.GONE);
-                	checkBox3.setVisibility(View.GONE);
-                	checkBox4.setVisibility(View.GONE);
-                	checkBox5.setVisibility(View.GONE);
-                	checkBox6.setVisibility(View.GONE);
                 	if(user.getsStatus().equals("班主任"))
                 	{
                 		checkBox1.setEnabled(true);
@@ -476,25 +483,13 @@ public class BaodaoHandleActivity extends Activity {
                 {
                 	detail.setVisibility(View.GONE);
                 	ll_checkbox.setVisibility(View.VISIBLE);
-                	checkBox1.setVisibility(View.VISIBLE);
-                	checkBox2.setVisibility(View.VISIBLE);
-                	checkBox3.setVisibility(View.VISIBLE);
-                	checkBox4.setVisibility(View.VISIBLE);
-                	checkBox5.setVisibility(View.VISIBLE);
-                	checkBox6.setVisibility(View.VISIBLE);
-                	if(user.getsStatus().equals("班主任"))
-                	{
-                		checkBox1.setEnabled(true);
-                		checkBox2.setEnabled(true);
-                		checkBox3.setEnabled(true);
-                		checkBox4.setEnabled(true);
-                		checkBox5.setEnabled(true);
-                		checkBox6.setEnabled(true);
-                	}
                 	String[] ziliaoArray=userObject.optString(key).split("\n");
                 	for(int i=0;i<ziliaoArray.length;i++)
                 	{
                 		CheckBox cb=(CheckBox)ll_checkbox.getChildAt(i);
+                		cb.setVisibility(View.VISIBLE);
+                		if(user.getsStatus().equals("班主任"))
+                			cb.setEnabled(true);
                 		final String[] itemArray=ziliaoArray[i].split(":");
                 		cb.setText(itemArray[0]);
                 		if(itemArray.length==2 && itemArray[1]!=null && itemArray[1].equals("已提交"))
@@ -541,11 +536,6 @@ public class BaodaoHandleActivity extends Activity {
                 	detail.setVisibility(View.GONE);
                 	ll_checkbox.setVisibility(View.VISIBLE);
                 	checkBox1.setVisibility(View.VISIBLE);
-                	checkBox2.setVisibility(View.GONE);
-                	checkBox3.setVisibility(View.GONE);
-                	checkBox4.setVisibility(View.GONE);
-                	checkBox5.setVisibility(View.GONE);
-                	checkBox6.setVisibility(View.GONE);
                 	if(user.getsStatus().equals("班主任"))
                 	{
                 		checkBox1.setEnabled(true);
@@ -595,11 +585,6 @@ public class BaodaoHandleActivity extends Activity {
                 	detail.setVisibility(View.GONE);
                 	ll_checkbox.setVisibility(View.VISIBLE);
                 	checkBox1.setVisibility(View.VISIBLE);
-                	checkBox2.setVisibility(View.GONE);
-                	checkBox3.setVisibility(View.GONE);
-                	checkBox4.setVisibility(View.GONE);
-                	checkBox5.setVisibility(View.GONE);
-                	checkBox6.setVisibility(View.GONE);
                 	if(user.getsStatus().equals("班主任"))
                 	{
                 		checkBox1.setEnabled(true);
@@ -676,11 +661,6 @@ public class BaodaoHandleActivity extends Activity {
                 	detail.setVisibility(View.GONE);
                 	ll_checkbox.setVisibility(View.VISIBLE);
                 	checkBox1.setVisibility(View.VISIBLE);
-                	checkBox2.setVisibility(View.GONE);
-                	checkBox3.setVisibility(View.GONE);
-                	checkBox4.setVisibility(View.GONE);
-                	checkBox5.setVisibility(View.GONE);
-                	checkBox6.setVisibility(View.GONE);
                 	if(user.getsStatus().equals("宿舍管理员"))
                 		checkBox1.setEnabled(true);
                 	checkBox1.setText(userObject.optString(key));
@@ -794,58 +774,53 @@ public class BaodaoHandleActivity extends Activity {
                 {
                 	detail.setVisibility(View.GONE);
                 	ll_checkbox.setVisibility(View.VISIBLE);
-                	checkBox1.setVisibility(View.VISIBLE);
-                	checkBox2.setVisibility(View.GONE);
-                	checkBox3.setVisibility(View.GONE);
-                	checkBox4.setVisibility(View.GONE);
-                	checkBox5.setVisibility(View.GONE);
-                	checkBox6.setVisibility(View.GONE);
-                	if(user.getsStatus().equals("班主任"))
+                	String[] ziliaoArray=userObject.optString(key).split("\n");
+                	for(int i=0;i<ziliaoArray.length;i++)
                 	{
-                		checkBox1.setEnabled(true);
+                		CheckBox cb=(CheckBox)ll_checkbox.getChildAt(i);
+                		cb.setVisibility(View.VISIBLE);
+                		if(user.getsStatus().equals("班主任"))
+                			cb.setEnabled(true);
+                		final String[] itemArray=ziliaoArray[i].split(":");
+                		cb.setText(itemArray[0]);
+                		if(itemArray.length==2 && itemArray[1]!=null && itemArray[1].equals("是"))
+                			cb.setChecked(true);
+                    	else
+                    		cb.setChecked(false);
+                		cb.setOnClickListener(new OnClickListener(){
+    						@Override
+    						 public void onClick(final View v) {
+    			                final boolean checked = ((CheckBox) v).isChecked();
+    			                if(checked && conditionVerify())
+    			                {
+    			                	((CheckBox) v).setChecked(false);
+    			                	return;
+    			                }
+    			                if(!checked)
+    			                {
+    			                	new AlertDialog.Builder(BaodaoHandleActivity.this).setTitle("确认撤销吗？") 
+    			                    .setIcon(android.R.drawable.ic_menu_info_details) 
+    			                    .setCancelable(false)
+    			                    .setPositiveButton("是", new DialogInterface.OnClickListener() { 
+    			                        @Override 
+    			                        public void onClick(DialogInterface dialog, int which) { 
+    			                        	updateBaodao(itemArray[0],checked,null);
+    			                        } 
+    			                    }) 
+    			                    .setNegativeButton("否", new DialogInterface.OnClickListener() { 
+    			                        @Override 
+    			                        public void onClick(DialogInterface dialog, int which) { 
+    			                        	((CheckBox) v).setChecked(true);
+    			                        } 
+    			                    })
+    			                    .show(); 
+    			                }
+    			                else
+    			                	updateBaodao(itemArray[0],checked,null);
+    			                	
+    						}
+                    	});
                 	}
-                	checkBox1.setText(userObject.optString(key));
-                	if(userObject.optString(key).equals("已缴费") )
-                		checkBox1.setChecked(true);
-                	else
-                		checkBox1.setChecked(false);
-                	checkBox1.setTag(userObject.optString(key));
-                	checkBox1.setOnClickListener(new OnClickListener(){
-						@Override
-						 public void onClick(final View v) {
-			                final boolean checked = ((CheckBox) v).isChecked();
-			                if(checked && conditionVerify())
-			                {
-			                	((CheckBox) v).setChecked(false);
-			                	return;
-			                }
-			                if(!checked)
-			                {
-			                	
-			                	new AlertDialog.Builder(BaodaoHandleActivity.this).setTitle("确认撤销吗？") 
-			                    .setIcon(android.R.drawable.ic_menu_info_details) 
-			                    .setCancelable(false)
-			                    .setPositiveButton("是", new DialogInterface.OnClickListener() { 
-			                        @Override 
-			                        public void onClick(DialogInterface dialog, int which) { 
-			                        	updateBaodao(key,checked,null);
-			                        } 
-			                    }) 
-			                    .setNegativeButton("否", new DialogInterface.OnClickListener() { 
-			                        @Override 
-			                        public void onClick(DialogInterface dialog, int which) { 
-			                        	((CheckBox) v).setChecked(true);
-			                        } 
-			                    })
-			                    .show(); 
-			                }
-			                else
-			                {
-			                	updateBaodao(key,checked,null);
-			                }
-
-						}
-                	});
                 	
                 }
                 else

@@ -77,8 +77,6 @@ public class SelectStudentActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent it = new Intent();  
-                setResult(Activity.RESULT_OK, it);  
 				finish();
 			}
 			
@@ -434,13 +432,17 @@ public class SelectStudentActivity extends Activity {
 					@Override
 					public void onClick(View v) 
 					{
-						
+						/*
 						Intent resultIntent = new Intent();
 						Bundle bundle = new Bundle();
 						bundle.putString("result", contactsMember.getId());
 						resultIntent.putExtras(bundle);
 						setResult(RESULT_OK, resultIntent);
 						finish();
+						*/
+						Intent intent=new Intent(SelectStudentActivity.this,BaodaoHandleActivity.class);
+						intent.putExtra("ID", contactsMember.getId());
+						startActivityForResult(intent,101);
 					}
 				});
 				
@@ -658,6 +660,17 @@ public class SelectStudentActivity extends Activity {
 		}
 
 	}
-	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+		case 101:
+			if(resultCode == RESULT_OK){
+				groupList.clear();
+				childList.clear();
+				getStudentList();
+			}
+			break;
+		}
+    }
    
 }

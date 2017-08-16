@@ -183,11 +183,10 @@ public class WebSiteActivity extends Activity {
 	public void reloginmoodle()
 	{
 		String loginUrl =  getIntent().getStringExtra("loginUrl");
-		String userId=PrefUtility.get(Constants.PREF_LOGIN_ID, "");
 		String username=PrefUtility.get(Constants.PREF_LOGIN_NAME, "");
 		username=username.split("@")[0];
 		String password=PrefUtility.get(Constants.PREF_LOGIN_PASS, "");
-		String postDate = "身份�??="+userId+"&考生�??="+username+"&密码="+password;
+		String postDate = "身份证号="+username+"&密码="+password;
 		mWebView.postUrl(loginUrl, EncodingUtils.getBytes(postDate, "BASE64"));
 		needLoadHtml=moodleText;
 	}
